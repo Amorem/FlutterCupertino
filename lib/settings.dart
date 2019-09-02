@@ -16,6 +16,7 @@ class _SettingsState extends State<Settings> {
       0: Text('Decimal'),
       1: Text('Imperial')
     };
+    Util.getSettings().then(updateControl);
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
         middle: Text('Settings'),
@@ -33,6 +34,7 @@ class _SettingsState extends State<Settings> {
                     children: systems,
                     groupValue: unit,
                     onValueChanged: (value) {
+                      Util.saveSettings(value);
                       updateControl(value);
                     },
                   ),

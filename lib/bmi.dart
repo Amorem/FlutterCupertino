@@ -8,8 +8,14 @@ class Bmi extends StatefulWidget {
 }
 
 class _BmiState extends State<Bmi> {
+  TextEditingController heightController;
+  TextEditingController weightController;
+  int unit;
+
   @override
   Widget build(BuildContext context) {
+    heightController = TextEditingController();
+    weightController = TextEditingController();
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
     return CupertinoPageScaffold(
@@ -28,7 +34,9 @@ class _BmiState extends State<Bmi> {
                   Util.paddingLeft,
                   Container(width: width / 3, child: Text('Height')),
                   Expanded(
-                    child: CupertinoTextField(),
+                    child: CupertinoTextField(
+                      controller: heightController,
+                    ),
                   ),
                   Util.paddingLeft,
                 ],
@@ -42,7 +50,9 @@ class _BmiState extends State<Bmi> {
                     width: width / 3,
                   ),
                   Expanded(
-                    child: CupertinoTextField(),
+                    child: CupertinoTextField(
+                      controller: weightController,
+                    ),
                   ),
                   Util.paddingLeft,
                 ],
@@ -50,7 +60,9 @@ class _BmiState extends State<Bmi> {
               Expanded(child: Util.paddingTop),
               CupertinoButton.filled(
                 child: Text('Calculate BMI'),
-                onPressed: () {},
+                onPressed: () {
+                  showResult();
+                },
               ),
               Util.paddingTop,
             ]),
@@ -58,5 +70,30 @@ class _BmiState extends State<Bmi> {
         ),
       ),
     );
+  }
+
+  void showResult() async {
+    double height = double.tryParse(heightController.text);
+    double weight = double.tryParse(weightController.text);
+    int unit = await Util.getSettings();
+    double result = Util.calculateBMI(height, weight, unit);
+    String message = 'Your BMI is ' + result.toStringAsFixed(2);
+    CupertinoAlertDialog dialog = CupertinoAlertDialog(
+      title: Text("Results"),
+      content: Text(message),
+      actions: <Widget>[
+        CupertinoDialogAction(
+          child: Text("OK"),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        )
+      ],
+    );
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return dialog;
+        });
   }
 }
